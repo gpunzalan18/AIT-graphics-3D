@@ -1,0 +1,18 @@
+Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
+	precision highp float;
+	
+	uniform sampler2d probeTexture;
+
+
+	void main(void) {
+
+		vec3 reflDir = reflect(-viewDirection, normal);
+		vec3 m = normalize(reflDir + vec3(0, 0, 1));
+		vec2 probeTex = vec2(.5,.5) + ((m.x - m.y )/2);
+
+		gl_FragColor = texture2D(probeTexture, probeTex);
+
+
+
+	}
+`;

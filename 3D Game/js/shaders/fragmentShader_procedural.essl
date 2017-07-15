@@ -1,0 +1,54 @@
+Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
+	precision highp float;
+
+	varying vec2 tex;
+	varying vec3 texPosition;
+	uniform sampler2D colorTexture;
+
+	varying vec4 worldNormal;
+	varying vec4 worldPos;
+	uniform vec3 lightDirection;
+
+
+
+	uniform vec4 lightpos[3];
+
+	//uniform vec4 lightpos;
+	uniform vec4 lightpowerdensity[3];
+	uniform vec3 view;
+
+	void main(void) {
+		vec4 phongblinn = vec4(0,0,0,0);
+		vec4 diffuse = vec4(0,0,0,0);
+		
+		vec3 normal = normalize(worldNormal.xyz);
+		vec3 viewDirection = normalize(view - worldPos.xyz);
+
+		float function = pow(5.0 * sin(0.25 * dot(worldPos.xyz, vec3(tex,1))), 5.0);
+		vec3 color = vec3(.1,0,0);
+
+
+
+		for(int i= 0; i < 3; i++){
+			vec3 lightDirection = normalize(lightpos[i].xyz - (worldPos.xyz * lightpos[i].w));
+			vec3 halfway = normalize(viewDirection +  lightDirection);	
+
+			//PHONGBLINN
+			float pb = max(dot(normal,halfway), 0.0);
+			float square = pow(length(lightpos[i].xyz - (worldPos.xyz * lightpos[i].w)), 2.0); 
+			phongblinn +=  (lightpowerdensity[i]/square) * vec4(color * pow(pb, 20.0), 1);
+
+			//DIFFUSE LIGHTING
+			float d = max(dot(normal,lightDirection), 0.0);
+			diffuse += (lightpowerdensity[i]) * vec4(color * d, 1);
+
+		}
+		gl_FragColor = diffuse + phongblinn * function;
+		
+
+	
+
+
+
+	}
+`;

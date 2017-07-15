@@ -1,0 +1,39 @@
+Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
+	precision highp float;
+
+	uniform sampler2D normTexture;
+
+	varying vec4 worldNormal;
+	varying vec4 worldPos;
+	uniform vec3 lightDirection;
+
+	uniform vec4 lightpos;
+	uniform vec4 lightpowerdensity;
+	uniform vec3 view;
+
+	varying vec4 rayDir;
+	
+	void main(void) {
+		vec3 added = vec3(tan(cos(worldPos.x)), tan(cos(worldPos.y)) , tan(cos(worldPos.z)));
+		vec3 normal = normalize(worldNormal.xyz + added);
+		vec3 viewDirection = normalize(view - worldPos.xyz);
+		vec3 reflDir = reflect(-viewDirection, normal);
+
+
+		//float t = -1.0 * view.x / rayDir.x;
+
+		//if(t < 0.0){
+			vec3 m = normalize(reflDir + vec3(0,0,1));
+			vec2 probeTex = vec2(.5,.5) + (vec2(m.x, - m.y)/2.0 );
+
+			gl_FragColor = texture2D(normTexture, probeTex);
+		//}
+		//else{
+			//l_FragColor =  vec4(1,0,1,1);
+		//}
+
+
+
+
+	}
+`;
